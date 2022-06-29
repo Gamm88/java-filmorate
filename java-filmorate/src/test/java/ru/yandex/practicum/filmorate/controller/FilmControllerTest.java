@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 @WebMvcTest(controllers = FilmController.class)
 public class FilmControllerTest {
 
+    // mockMvc
     @Autowired
     MockMvc mockMvc;
 
