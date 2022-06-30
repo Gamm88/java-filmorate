@@ -20,6 +20,6 @@ public class Film {
 
     protected LocalDate releaseDate;
 
-    @Positive
+    @Positive(message = "Продолжительность не может быть отрицательной")
     protected int duration;
 }
