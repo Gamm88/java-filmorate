@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Data
 public class User {
 
-    protected int id;
+    private int id;
 
     @NotBlank(message = "Логин не может быть пустой")
     @Pattern(regexp = "\\S+", message = "Логин не может содержать пробелы")
@@ -22,6 +22,6 @@ public class User {
     @Email(message = "Электронная почта указан некорректно")
     protected String email;
 
-    @Past(message = "Дата рождения не может быть в будущем")
+    @PastOrPresent(message = "Дата рождения не может быть в будущем")
     protected LocalDate birthday;
 }

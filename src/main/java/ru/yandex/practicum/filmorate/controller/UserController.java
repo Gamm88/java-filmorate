@@ -39,7 +39,7 @@ public class UserController {
             }
         }
         // имя может быть пустым — в таком случае будет использован логин;
-        if(user.getName().isBlank()) {
+        if(user.getName() == null || user.getName().isEmpty() ) {
             user.setName(user.getLogin());
         }
         // создаём пользователя
@@ -58,7 +58,7 @@ public class UserController {
             throw new ValidationException("Пользователь с ID " + user.getId() + " не найден");
         }
         // имя может быть пустым — в таком случае будет использован логин;
-        if(user.getName().isBlank()) {
+        if(user.getName() == null || user.getName().isEmpty() ) {
             user.setName(user.getLogin());
         }
         // обновляем пользователя
