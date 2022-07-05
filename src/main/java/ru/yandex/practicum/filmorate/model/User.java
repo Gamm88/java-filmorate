@@ -10,7 +10,7 @@ import java.time.LocalDate;
 @Data
 public class User {
 
-    private int id;
+    private long id;
 
     @NotBlank(message = "Логин не может быть пустой")
     @Pattern(regexp = "\\S+", message = "Логин не может содержать пробелы")

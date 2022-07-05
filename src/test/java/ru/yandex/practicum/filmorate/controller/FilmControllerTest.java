@@ -75,7 +75,7 @@ public class FilmControllerTest {
 
     // тестирование корректного обновление фильма
     @Test
-    @DisplayName("При корректном обновлении пользователя, возвращается код 200")
+    @DisplayName("При корректном обновлении фильма, возвращается код 200")
     void putMethod_shouldReturnResponseWithCode200_whenCorrectDataUpdated() throws Exception {
         // обновляем фильм
         mockMvc.perform(MockMvcRequestBuilders.put("/films")

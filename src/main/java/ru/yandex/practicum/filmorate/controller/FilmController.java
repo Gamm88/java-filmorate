@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,8 +18,8 @@ import java.util.Map;
 @RequestMapping("/films")
 public class FilmController {
 
-    private int id = 0; // уникальный ID фильма
-    private Map<Integer, Film> films = new HashMap<>(); // хранение фильмов
+    private long id = 0; // уникальный ID фильма
+    private final Map<Long, Film> films = new HashMap<>(); // хранение фильмов
 
     // получить всех фильмов
     @GetMapping
