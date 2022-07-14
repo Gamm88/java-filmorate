@@ -15,6 +15,7 @@ import java.util.List;
  * содержит эндпоинты
  */
 @RestController
+@RestControllerAdvice
 @RequestMapping("/users")
 public class UserController {
     private final InMemoryUserStorage inMemoryUserStorage;

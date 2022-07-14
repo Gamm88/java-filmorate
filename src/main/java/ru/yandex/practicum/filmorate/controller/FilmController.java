@@ -14,6 +14,7 @@ import java.util.Collection;
  * содержит эндпоинты
  */
 @RestController
+@RestControllerAdvice
 @RequestMapping("/films")
 public class FilmController {
     private final InMemoryFilmStorage inMemoryFilmStorage;

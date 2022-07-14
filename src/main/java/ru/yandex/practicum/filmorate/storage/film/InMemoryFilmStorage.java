@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -14,6 +15,7 @@ import java.util.HashMap;
  */
 @Slf4j
 @Component
+@RestControllerAdvice
 public class InMemoryFilmStorage implements FilmStorage {
     private long id = 0; // уникальный ID фильма
     private final HashMap<Long, Film> films = new HashMap<>(); // хранение фильмов
