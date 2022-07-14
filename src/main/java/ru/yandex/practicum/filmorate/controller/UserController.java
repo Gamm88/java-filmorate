@@ -1,94 +1,88 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import javax.validation.Valid;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Контроллер пользователей
- * Методы - получить, создать, обновить
+ * содержит эндпоинты
  */
-@Slf4j
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserService userService;
 
-    private long id = 0; // уникальный ID пользователя
-    private final Map<Long, User> users = new HashMap<>(); // хранение пользователей
-
-    // получить всех пользователей
-    @GetMapping
-    public Collection<User> findAll() {
-        return users.values();
+    @Autowired
+    public UserController(InMemoryUserStorage inMemoryUserStorage, UserService userService) {
+        this.inMemoryUserStorage = inMemoryUserStorage;
+        this.userService = userService;
     }
 
     // создать пользователя
     @PostMapping
-    public User create(@Valid @RequestBody User user) {
-        // проверяем на дублирование пользователей (по почте)
-        if (emailCheck(user.getEmail())) {
-            log.debug("Пользователь с электронной почтой уже зарегистрирован: {}", user.getEmail());
-            throw new ValidationException("Пользователь с электронной почтой " +
-                    user.getEmail() + " уже зарегистрирован.");
-        }
-        // имя может быть пустым — в таком случае будет использован логин;
-        if (nameCheck(user.getName())) {
-            user.setName(user.getLogin());
-        }
-        // создаём пользователя
-        user.setId(++id);
-        users.put(user.getId(), user);
-        log.debug("Добавлен пользователь: {}", user);
-        return user;
+    public User createUser(@Valid @RequestBody User user) {
+        return inMemoryUserStorage.createUser(user);
+    }
+
+    // получить всех пользователей
+    @GetMapping
+    public Collection<User> getAllUsers() {
+        return inMemoryUserStorage.getAllUsers();
+    }
+
+    // получить пользователя по ИД
+    @GetMapping("/{userId}")
+    public User getFilmById(@PathVariable("userId") long userId) {
+        return inMemoryUserStorage.getUserById(userId);
     }
 
     // обновить пользователя
     @PutMapping
-    public User put(@Valid @RequestBody User user) {
-        // проверяем, что обновляемый пользователь существует
-        if (!users.containsKey(user.getId())) {
-            log.debug("Пользователь с таким ID не найден: {}", user.getId());
-            throw new ValidationException("Пользователь с ID " + user.getId() + " не найден");
-        }
-        // если изменена электронная почта, проверяем на дублирование с другими пользователями
-        if (users.get(user.getId()).getEmail() != user.getEmail()) {
-            if (emailCheck(user.getEmail())) {
-                log.debug("Пользователь с электронной почтой уже зарегистрирован: {}", user.getEmail());
-                throw new ValidationException("Пользователь с электронной почтой " +
-                        user.getEmail() + " уже зарегистрирован.");
-            }
-        }
-        // имя может быть пустым — в таком случае будет использован логин;
-        if (nameCheck(user.getName())) {
-            user.setName(user.getLogin());
-        }
-        // обновляем пользователя
-        users.put(user.getId(), user);
-        log.debug("Обновлён пользователь: {}", user);
-        return user;
+    public User updateUser(@Valid @RequestBody User user) {
+        return inMemoryUserStorage.updateUser(user);
     }
 
-    // проверка указано имя или нет
-    private boolean nameCheck(String name) {
-        if (name == null || name.isBlank()) {
-            return true;
-        }
-        return false;
+    // удалить всех пользователей
+    @DeleteMapping
+    public boolean deleteAllUsers() {
+        return inMemoryUserStorage.deleteAllUsers();
     }
 
-    // проверка на дублирование пользователей (по почте)
-    private boolean emailCheck(String email) {
-        for (Map.Entry<Long, User> entry : users.entrySet()) {
-            if (entry.getValue().getEmail().equals(email)) {
-                return true;
-            }
-        }
-        return false;
+    // удалить пользователя по ИД
+    @DeleteMapping("/{userId}")
+    public boolean deleteUserById(@PathVariable("userId") long userId) {
+        return inMemoryUserStorage.deleteUserById(userId);
+    }
+
+    // добавить в друзья
+    @PutMapping("/{userId}/friends/{friendId}")
+    public boolean addToFriends(@PathVariable long userId, @PathVariable long friendId) {
+        return userService.addToFriends(userId, friendId);
+    }
+
+    // удаление из друзей
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public boolean removeFromFriends(@PathVariable long userId, @PathVariable long friendId) {
+        return userService.removeFromFriends(userId, friendId);
+    }
+
+    // получить список друзей пользователя
+    @GetMapping("/{userId}/friends")
+    public List<User> friendsList(@PathVariable long userId) {
+        return userService.friendsList(userId);
+    }
+
+    // получить список общих друзей
+    @GetMapping("/{userId}/friends/common/{otherId}")
+    public List<User> commonFriends(@PathVariable long userId, @PathVariable long otherId) {
+        return userService.commonFriends(userId, otherId);
     }
 }

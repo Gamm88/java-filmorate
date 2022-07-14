@@ -4,6 +4,9 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Модель пользователя
  */
@@ -24,4 +27,6 @@ public class User {
 
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
     protected LocalDate birthday;
+
+    protected Set<Long> friends = new TreeSet<>();
 }

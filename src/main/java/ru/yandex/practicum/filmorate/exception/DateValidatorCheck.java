@@ -15,10 +15,6 @@ public class DateValidatorCheck implements ConstraintValidator<DateValidator, Lo
 
     @Override
     public boolean isValid(LocalDate filmReleaseDate, ConstraintValidatorContext context) {
-        if(filmReleaseDate.isBefore(RELEASE_DATE_NOT_EARLIER)) {
-            return false;
-        } else {
-            return true;
-        }
+        return !filmReleaseDate.isBefore(RELEASE_DATE_NOT_EARLIER);
     }
 }

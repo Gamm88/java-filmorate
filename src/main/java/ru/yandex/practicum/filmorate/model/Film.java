@@ -5,6 +5,8 @@ import ru.yandex.practicum.filmorate.exception.DateValidator;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Модель фильма
@@ -25,4 +27,6 @@ public class Film {
 
     @Positive(message = "Продолжительность не может быть отрицательной")
     protected int duration;
+
+    protected Set<Long> likes = new TreeSet<>();
 }
