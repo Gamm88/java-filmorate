@@ -32,7 +32,7 @@ public class UserService {
             userStorage.getUserById(userId).getFriends().add(friendId);
             userStorage.getUserById(friendId).getFriends().add(userId);
         } else throw new ValidationException("Неверный пользователя и/или друга");
-        log.debug("Добавить в друзья");
+        log.debug("Пользователь " + userId + " добавляет в друзья пользователя " + friendId);
         return userStorage.getUserById(userId).getFriends().contains(friendId)
                 && userStorage.getUserById(friendId).getFriends().contains(userId);
     }
@@ -43,7 +43,7 @@ public class UserService {
             userStorage.getUserById(userId).getFriends().remove(friendId);
             userStorage.getUserById(friendId).getFriends().remove(userId);
         } else throw new ValidationException("Неверный пользователя и/или друга");
-        log.debug("Удаление из друзей");
+        log.debug("Пользователь " + userId + " удаляет из друзей пользователя " + friendId);
         return !userStorage.getUserById(userId).getFriends().contains(friendId)
                 && !userStorage.getUserById(friendId).getFriends().contains(userId);
     }
@@ -56,7 +56,7 @@ public class UserService {
         for (Long id : userStorage.getUserById(userId).getFriends()) {
             friendsList.add(userStorage.getUserById(id));
         }
-        log.debug("Получить список друзей пользователя по ИД: {}", userId);
+        log.debug("Получить список друзей пользователя с ИД: {}", userId);
         return friendsList;
     }
 
@@ -85,7 +85,7 @@ public class UserService {
         for (Long id : mergedFriendsList) {
             commonFriends.add(userStorage.getUserById(id));
         }
-        log.debug("Получить список общих друзей");
+        log.debug("Получить список общих друзей пользователя с ИД " + userId + " и с ИД " + otherId);
         return commonFriends;
     }
 }

@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
@@ -14,7 +13,6 @@ import java.util.Collection;
  * Контроллер фильмов
  * содержит эндпоинты
  */
-@Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
@@ -48,21 +46,18 @@ public class FilmController {
     // обновление фильма
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) {
-        log.debug("Обновление фильма: {}", film);
         return inMemoryFilmStorage.updateFilm(film);
     }
 
     // удалить все фильмы
     @DeleteMapping
     public boolean deleteAllFilms() {
-        log.debug("Удаление всех фильмов");
         return inMemoryFilmStorage.deleteAllFilms();
     }
 
     // удалить фильм по ИД
     @DeleteMapping("/{filmId}")
     public boolean deleteFilmById(@PathVariable("filmId") long filmId) {
-        log.debug("Удаление фильма по Ид: {}", filmId);
         return inMemoryFilmStorage.deleteFilmById(filmId);
     }
 

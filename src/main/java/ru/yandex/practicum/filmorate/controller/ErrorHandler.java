@@ -9,6 +9,10 @@ import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
+/**
+ * Контроллер обработки исключений
+ * содержит 400 - BAD_REQUEST, 404 - NOT_FOUND, 500 - INTERNAL_SERVER_ERROR
+ */
 @Slf4j
 @RestControllerAdvice
 public class ErrorHandler {
