@@ -4,15 +4,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+
 /**
  * Сервисы для пользователей
  * добавлять и удалять друзей, поучить список общих друзей
@@ -28,30 +31,92 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
+    // создать пользователя
+    public User createUser(User user) {
+        // проверяем на дублирование пользователей (по почте)
+        if (emailCheck(user.getEmail())) {
+            throw new NotFoundException("Пользователь с электронной почтой " +
+                    user.getEmail() + " уже зарегистрирован.");
+        }
+        // имя может быть пустым — в таком случае будет использован логин;
+        if (nameCheck(user.getName())) {
+            user.setName(user.getLogin());
+        }
+        log.debug("Добавление пользователя: {}", user);
+        return userStorage.createUser(user);
+    }
+
+    // получить всех пользователей
+    public Collection<User> getAllUsers() {
+        log.debug("Получение всех пользователей");
+        return userStorage.getAllUsers();
+    }
+
+    // получить пользователя по ИД
+    public User getUserById(Long userId) {
+        if (userStorage.getUserById(userId) == null) {
+            throw new NotFoundException("Пользователь с ИД=" + userId + " не найден");
+        }
+        log.debug("Получение пользователя по ИД: {}", userId);
+        return userStorage.getUserById(userId);
+    }
+
+    // обновление пользователя
+    public User updateUser(User user) {
+        // проверяем, что обновляемый пользователь существует
+        if (userStorage.getUserById(user.getId()) == null) {
+            throw new NotFoundException("Пользователь с ID " + user.getId() + " не найден");
+        }
+        // проверяем на дублирование пользователей (по почте)
+        if (emailCheck(user.getEmail())) {
+            throw new ValidationException("Пользователь с электронной почтой " +
+                    user.getEmail() + " уже зарегистрирован.");
+        }
+        // имя может быть пустым — в таком случае будет использован логин;
+        if (nameCheck(user.getName())) {
+            user.setName(user.getLogin());
+        }
+        log.debug("Обновлён пользователь: {}", user);
+        return userStorage.updateUser(user);
+    }
+
+    // удалить всех пользователей
+    public void deleteAllUsers() {
+        userStorage.deleteAllUsers();
+    }
+
+    // удалить пользователя по ИД
+    public void deleteUserById(Long userId) {
+        // проверяем, что обновляемый пользователь существует
+        if (userStorage.getUserById(userId) == null) {
+            throw new NotFoundException("Пользователь с ID " + userId + " не найден");
+        }
+        log.debug("Удаление пользователя по Ид: {}", userId);
+        userStorage.deleteUserById(userId);
+    }
+
     // добавить в друзья
-    public boolean addToFriends(Long userId, Long friendId) {
+    public User addToFriends(Long userId, Long friendId) {
         if (userStorage.getUserById(userId) != null && userStorage.getUserById(friendId) != null) {
             userStorage.getUserById(userId).getFriends().add(friendId);
             userStorage.getUserById(friendId).getFriends().add(userId);
-        } else throw new ValidationException("Неверный пользователя и/или друга");
+        } else throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
         log.debug("Пользователь " + userId + " добавляет в друзья пользователя " + friendId);
-        return userStorage.getUserById(userId).getFriends().contains(friendId)
-                && userStorage.getUserById(friendId).getFriends().contains(userId);
+        return userStorage.getUserById(userId);
     }
 
     // удаление из друзей
-    public boolean removeFromFriends(Long userId, Long friendId) {
+    public User removeFromFriends(Long userId, Long friendId) {
         if (userStorage.getUserById(userId) != null && userStorage.getUserById(friendId) != null) {
             userStorage.getUserById(userId).getFriends().remove(friendId);
             userStorage.getUserById(friendId).getFriends().remove(userId);
-        } else throw new ValidationException("Неверный пользователя и/или друга");
+        } else throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
         log.debug("Пользователь " + userId + " удаляет из друзей пользователя " + friendId);
-        return !userStorage.getUserById(userId).getFriends().contains(friendId)
-                && !userStorage.getUserById(friendId).getFriends().contains(userId);
+        return userStorage.getUserById(userId);
     }
 
     // получить список друзей пользователя
-    public List<User> friendsList(Long userId) {
+    public List<User> getFriendsList(Long userId) {
         // создаём список куда будем добавлять друзей
         List<User> friendsList = new ArrayList<>();
         // наполняем список друзьями из списка ИД друзей пользователя
@@ -63,10 +128,10 @@ public class UserService {
     }
 
     // получить список общих друзей
-    public List<User> commonFriends(Long userId, Long otherId) {
+    public List<User> getCommonFriends(Long userId, Long otherId) {
         // создаём список куда будем добавлять общих друзей
         List<User> commonFriends = new ArrayList<>();
-        // объединяем списки друзей 2 пользователей в 1 лист
+        // объединяем списки друзей двух пользователей в один список
         List<Long> mergedFriendsList = new ArrayList<>();
         mergedFriendsList.addAll(userStorage.getUserById(userId).getFriends());
         mergedFriendsList.addAll(userStorage.getUserById(otherId).getFriends());
@@ -83,11 +148,26 @@ public class UserService {
                 .map(Map.Entry::getKey)
                 //собираем в список
                 .collect(Collectors.toList());
-        // наполняем список друзьями по ИД общих друзей
+        // наполняем список друзьями (User) по ИД общих друзей
         for (Long id : mergedFriendsList) {
             commonFriends.add(userStorage.getUserById(id));
         }
         log.debug("Получить список общих друзей пользователя с ИД " + userId + " и с ИД " + otherId);
         return commonFriends;
+    }
+
+    // проверка на заполнение имени пользователя
+    private boolean nameCheck(String name) {
+        return name == null || name.isBlank();
+    }
+
+    // проверка на дублирование пользователей (по почте)
+    private boolean emailCheck(String email) {
+        for (User user : userStorage.getAllUsers()) {
+            if (user.getEmail().equals(email)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

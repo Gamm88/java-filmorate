@@ -21,8 +21,8 @@ public interface FilmStorage {
     Film updateFilm(Film film);
 
     // удалить все фильмы
-    boolean deleteAllFilms();
+    void deleteAllFilms();
 
     // удалить фильм по ИД
-    boolean deleteFilmById(Long filmId);
+    void deleteFilmById(Long filmId);
 }

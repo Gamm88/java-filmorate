@@ -22,8 +22,8 @@ public interface UserStorage {
     User updateUser(User user);
 
     // удалить всех пользователей
-    boolean deleteAllUsers();
+    void deleteAllUsers();
 
     // удалить пользователя по ИД
-    boolean deleteUserById(Long userId);
+    void deleteUserById(Long userId);
 }

@@ -17,16 +17,16 @@ public class Film {
     private long id;
 
     @NotBlank(message = "Имя не может быть пустой")
-    protected String name;
+    private String name;
 
     @Size(max = 200, message = "Максимальная длина описания — 200 символов")
-    protected String description;
+    private String description;
 
     @DateValidator
-    protected LocalDate releaseDate;
+    private LocalDate releaseDate;
 
     @Positive(message = "Продолжительность не может быть отрицательной")
-    protected int duration;
+    private int duration;
 
-    protected Set<Long> likes = new TreeSet<>();
+    private Set<Long> likes = new TreeSet<>();
 }
