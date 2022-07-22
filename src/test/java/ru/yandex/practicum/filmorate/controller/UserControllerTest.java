@@ -25,7 +25,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Nick Name\"," +
                                 "\"email\":\"mail@mail.ru\", \"birthday\":\"1946-08-20\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     // тестирование добавление пользователя с некорректным указанием логина (с пробелом)
@@ -36,7 +36,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"login\":\"dolore \", \"name\":\"Nick Name\"," +
                                 "\"email\":\"mail@mail.ru\", \"birthday\":\"1946-08-20\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     // тестирование добавление пользователя без электронной почты
@@ -47,7 +47,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"login\":\"dolore\", \"name\":\"Nick Name\"," +
                                 "\"birthday\":\"1946-08-20\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     // тестирование добавление пользователя с некорректным указанием электронной почты
@@ -58,7 +58,7 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"login\":\"dolore\", \"name\":\"Nick Name\"," +
                                 "\"email\":\"mail-mail.ru\", \"birthday\":\"1946-08-20\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
 
     // тестирование добавление пользователя указанием даты рождения из будущего
@@ -69,9 +69,8 @@ public class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"login\":\"dolore\", \"name\":\"Nick Name\"," +
                                 "\"email\":\"mail@mail.ru\", \"birthday\":\"2046-08-20\"}"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isInternalServerError());
     }
-
 
     // тестирование корректного добавления пользователя
     @Test
@@ -88,7 +87,7 @@ public class UserControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("[{\"id\":1,\"login\":\"dolore\",\"name\":\"Nick Name\"," +
-                        "\"email\":\"mail@mail.ru\",\"birthday\":\"1946-08-20\"}]"));
+                        "\"email\":\"mail@mail.ru\",\"birthday\":\"1946-08-20\",\"friends\":[]}]"));
     }
 
     // тестирование корректного обновление пользователя
@@ -106,6 +105,7 @@ public class UserControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string("[{\"id\":1,\"login\":\"doloreUpdate\"," +
-                        "\"name\":\"Name Update\",\"email\":\"mail@yandex.ru\",\"birthday\":\"1976-09-20\"}]"));
+                        "\"name\":\"Name Update\",\"email\":\"mail@yandex.ru\",\"birthday\":\"1976-09-20\"," +
+                        "\"friends\":[]}]"));
     }
 }

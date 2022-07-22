@@ -4,6 +4,9 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.TreeSet;
+
 /**
  * Модель пользователя
  */
@@ -14,14 +17,16 @@ public class User {
 
     @NotBlank(message = "Логин не может быть пустой")
     @Pattern(regexp = "\\S+", message = "Логин не может содержать пробелы")
-    protected String login;
+    private String login;
 
-    protected String name;
+    private String name;
 
     @NotBlank(message = "Электронная почта не может быть пустой")
     @Email(message = "Электронная почта указан некорректно")
-    protected String email;
+    private String email;
 
     @PastOrPresent(message = "Дата рождения не может быть в будущем")
-    protected LocalDate birthday;
+    private LocalDate birthday;
+
+    private Set<Long> friends = new TreeSet<>();
 }
