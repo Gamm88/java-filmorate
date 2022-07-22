@@ -68,7 +68,7 @@ public class FilmController {
     // удалить лайк у фильма
     @DeleteMapping("/{filmId}/like/{userId}")
     public Film deleteLikeForFilm(@PathVariable long filmId, @PathVariable long userId) {
-        return filmService.deleteLikeForFilm(filmId, userId);
+        return filmService.deleteLikeFromFilm(filmId, userId);
     }
 
     // получить самые популярные фильмы по количеству лайков, если значение параметра count не задано, вернуть топ 10

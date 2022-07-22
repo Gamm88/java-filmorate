@@ -33,13 +33,12 @@ public class UserService {
 
     // создать пользователя
     public User createUser(User user) {
-        // проверяем на дублирование пользователей (по почте)
-        if (emailCheck(user.getEmail())) {
+        if (checkUserEmail(user.getEmail())) {
             throw new NotFoundException("Пользователь с электронной почтой " +
                     user.getEmail() + " уже зарегистрирован.");
         }
         // имя может быть пустым — в таком случае будет использован логин;
-        if (nameCheck(user.getName())) {
+        if (checkUserName(user.getName())) {
             user.setName(user.getLogin());
         }
         log.debug("Добавление пользователя: {}", user);
@@ -54,7 +53,7 @@ public class UserService {
 
     // получить пользователя по ИД
     public User getUserById(Long userId) {
-        if (userStorage.getUserById(userId) == null) {
+        if (checkingForExistenceUser(userId)) {
             throw new NotFoundException("Пользователь с ИД=" + userId + " не найден");
         }
         log.debug("Получение пользователя по ИД: {}", userId);
@@ -63,17 +62,15 @@ public class UserService {
 
     // обновление пользователя
     public User updateUser(User user) {
-        // проверяем, что обновляемый пользователь существует
-        if (userStorage.getUserById(user.getId()) == null) {
+        if (checkingForExistenceUser(user.getId())) {
             throw new NotFoundException("Пользователь с ID " + user.getId() + " не найден");
         }
-        // проверяем на дублирование пользователей (по почте)
-        if (emailCheck(user.getEmail())) {
+        if (checkUserEmail(user.getEmail())) {
             throw new ValidationException("Пользователь с электронной почтой " +
                     user.getEmail() + " уже зарегистрирован.");
         }
         // имя может быть пустым — в таком случае будет использован логин;
-        if (nameCheck(user.getName())) {
+        if (checkUserName(user.getName())) {
             user.setName(user.getLogin());
         }
         log.debug("Обновлён пользователь: {}", user);
@@ -87,8 +84,7 @@ public class UserService {
 
     // удалить пользователя по ИД
     public void deleteUserById(Long userId) {
-        // проверяем, что обновляемый пользователь существует
-        if (userStorage.getUserById(userId) == null) {
+        if (checkingForExistenceUser(userId)) {
             throw new NotFoundException("Пользователь с ID " + userId + " не найден");
         }
         log.debug("Удаление пользователя по Ид: {}", userId);
@@ -97,21 +93,23 @@ public class UserService {
 
     // добавить в друзья
     public User addToFriends(Long userId, Long friendId) {
-        if (userStorage.getUserById(userId) != null && userStorage.getUserById(friendId) != null) {
-            userStorage.getUserById(userId).getFriends().add(friendId);
-            userStorage.getUserById(friendId).getFriends().add(userId);
-        } else throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
+        if (checkingForExistenceUser(userId) || checkingForExistenceUser(friendId)) {
+            throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
+        }
         log.debug("Пользователь " + userId + " добавляет в друзья пользователя " + friendId);
+        userStorage.getUserById(userId).getFriends().add(friendId);
+        userStorage.getUserById(friendId).getFriends().add(userId);
         return userStorage.getUserById(userId);
     }
 
     // удаление из друзей
     public User removeFromFriends(Long userId, Long friendId) {
-        if (userStorage.getUserById(userId) != null && userStorage.getUserById(friendId) != null) {
-            userStorage.getUserById(userId).getFriends().remove(friendId);
-            userStorage.getUserById(friendId).getFriends().remove(userId);
-        } else throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
+        if (checkingForExistenceUser(userId) || checkingForExistenceUser(friendId)) {
+            throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
+        }
         log.debug("Пользователь " + userId + " удаляет из друзей пользователя " + friendId);
+        userStorage.getUserById(userId).getFriends().remove(friendId);
+        userStorage.getUserById(friendId).getFriends().remove(userId);
         return userStorage.getUserById(userId);
     }
 
@@ -156,13 +154,18 @@ public class UserService {
         return commonFriends;
     }
 
+    // проверка на существование пользователя, по ИД
+    private boolean checkingForExistenceUser(Long userId) {
+        return userStorage.getUserById(userId) == null;
+    }
+
     // проверка на заполнение имени пользователя
-    private boolean nameCheck(String name) {
+    private boolean checkUserName(String name) {
         return name == null || name.isBlank();
     }
 
     // проверка на дублирование пользователей (по почте)
-    private boolean emailCheck(String email) {
+    private boolean checkUserEmail(String email) {
         for (User user : userStorage.getAllUsers()) {
             if (user.getEmail().equals(email)) {
                 return true;

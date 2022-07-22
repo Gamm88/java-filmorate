@@ -46,8 +46,7 @@ public class FilmService {
 
     // получить фильм по ИД
     public Film getFilmById(Long filmId) {
-        // проверяем, что обновляемый фильм существует
-        if (filmStorage.getFilmById(filmId) == null) {
+        if (checkingForExistenceFilm(filmId)) {
             throw new NotFoundException("Фильм с ИД=" + filmId + " не найден");
         }
         log.debug("Получение фильма по Ид: {}", filmId);
@@ -56,8 +55,7 @@ public class FilmService {
 
     // обновление фильма
     public Film updateFilm(Film film) {
-        // проверяем, что обновляемый фильм существует
-        if (filmStorage.getFilmById(film.getId()) == null) {
+        if (checkingForExistenceFilm(film.getId())) {
             throw new NotFoundException("Фильм с ИД=" + film.getId() + " не найден");
         }
         log.debug("Обновление фильма: {}", film);
@@ -71,30 +69,30 @@ public class FilmService {
 
     // удалить фильм по ИД
     public void deleteFilmById(Long filmId) {
-        // проверяем, что обновляемый фильм существует
-        if (filmStorage.getFilmById(filmId) == null) {
+        if (checkingForExistenceFilm(filmId)) {
             throw new NotFoundException("Фильм с ИД=" + filmId + " не найден");
         }
-        // удаляем фильм
         log.debug("Удаление фильма по Ид: {}", filmId);
         filmStorage.deleteFilmById(filmId);
     }
 
     // добавить лайк фильму
     public Film addLikeToFilm(Long filmId, Long userId) {
-        if (filmStorage.getFilmById(filmId) != null && userStorage.getUserById(userId) != null) {
-            filmStorage.getFilmById(filmId).getLikes().add(userId);
-        } else throw new NotFoundException("Фильм и/или пользователь не найдены, проверьте ИД");
+        if (checkingForExistenceFilm(filmId) || checkingForExistenceUser(userId)) {
+            throw new NotFoundException("Фильм и/или пользователь не найдены, проверьте ИД");
+        }
         log.debug("Пользователь с ИД=" + userId + " ставит лайк у фильму с ИД=" + filmId);
+        filmStorage.getFilmById(filmId).getLikes().add(userId);
         return filmStorage.getFilmById(filmId);
     }
 
     // удалить лайк у фильма
-    public Film deleteLikeForFilm(Long filmId, Long userId) {
-        if (filmStorage.getFilmById(filmId) != null && userStorage.getUserById(userId) != null) {
-            filmStorage.getFilmById(filmId).getLikes().remove(userId);
-        } else throw new NotFoundException("Фильм и/или пользователь не найдены, проверьте ИД");
+    public Film deleteLikeFromFilm(Long filmId, Long userId) {
+        if (checkingForExistenceFilm(filmId) || checkingForExistenceUser(userId)) {
+            throw new NotFoundException("Фильм и/или пользователь не найдены, проверьте ИД");
+        }
         log.debug("Пользователь с ИД=" + userId + " удаляет лайк у фильма с ИД=" + filmId);
+        filmStorage.getFilmById(filmId).getLikes().remove(userId);
         return filmStorage.getFilmById(filmId);
     }
 
@@ -109,5 +107,15 @@ public class FilmService {
                 .sorted((o1, o2) -> o2.getLikes().size() - o1.getLikes().size())
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    // проверка на существование фильма, по ИД
+    private boolean checkingForExistenceFilm(Long filmId) {
+        return filmStorage.getFilmById(filmId) == null;
+    }
+
+    // проверка на существование пользователя, по ИД
+    private boolean checkingForExistenceUser(Long userId) {
+        return userStorage.getUserById(userId) == null;
     }
 }
