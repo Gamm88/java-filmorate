@@ -1,32 +1,28 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.Set;
-import java.util.TreeSet;
 
-/**
- * Модель пользователя
- */
-@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@Builder
+@ToString
 public class User {
-
+    @NotNull
     private long id;
-
-    @NotBlank(message = "Логин не может быть пустой")
+    @NotNull(message = "Логин не может быть пустым")
+    @NotBlank(message = "Логин не может быть пустым")
     @Pattern(regexp = "\\S+", message = "Логин не может содержать пробелы")
     private String login;
-
     private String name;
-
-    @NotBlank(message = "Электронная почта не может быть пустой")
     @Email(message = "Электронная почта указан некорректно")
+    @NotNull(message = "Электронная почта не может быть пустой")
+    @NotBlank(message = "Электронная почта не может быть пустой")
     private String email;
-
-    @PastOrPresent(message = "Дата рождения не может быть в будущем")
+    @Past(message = "Дата рождения не может быть в будущем")
     private LocalDate birthday;
-
-    private Set<Long> friends = new TreeSet<>();
 }

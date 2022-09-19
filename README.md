@@ -1,8 +1,7 @@
 # java-filmorate
 
-Диаграмма планируемой базы данных для filmorate:
-![База данных](filmorateDB.png)
-Ссылка на диаграмму - https://dbdiagram.io/d/62de18320d66c746553f8aac
+Диаграмма базы данных для filmorate:
+![filmorateDB.png](filmorateDB.png)
 
 ### Примеры запросов в БД для основных операций вашего приложения:
 

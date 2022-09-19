@@ -2,19 +2,15 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dao.user.UserStorage;
+
+import java.util.List;
+
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
-import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 /**
  * Сервисы для пользователей
@@ -22,155 +18,112 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-@RestControllerAdvice
 public class UserService {
     private final UserStorage userStorage;
 
     @Autowired
-    public UserService(UserStorage userStorage) {
+    public UserService(@Qualifier("UserDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
     }
 
     // создать пользователя
     public User createUser(User user) {
-        if (checkUserEmail(user.getEmail())) {
-            throw new NotFoundException("Пользователь с электронной почтой " +
-                    user.getEmail() + " уже зарегистрирован.");
-        }
+        checkUserEmail(user.getEmail());
         // имя может быть пустым — в таком случае будет использован логин;
         if (checkUserName(user.getName())) {
             user.setName(user.getLogin());
         }
-        log.debug("Добавление пользователя: {}", user);
+        log.info("Добавление пользователя: {}", user);
         return userStorage.createUser(user);
     }
 
     // получить всех пользователей
-    public Collection<User> getAllUsers() {
-        log.debug("Получение всех пользователей");
+    public List<User> getAllUsers() {
+        log.info("Получение всех пользователей");
         return userStorage.getAllUsers();
     }
 
     // получить пользователя по ИД
     public User getUserById(Long userId) {
-        if (checkingForExistenceUser(userId)) {
-            throw new NotFoundException("Пользователь с ИД=" + userId + " не найден");
-        }
-        log.debug("Получение пользователя по ИД: {}", userId);
+        checkingForExistenceUser(userId);
+        log.info("Получение пользователя по ИД: {}", userId);
         return userStorage.getUserById(userId);
     }
 
     // обновление пользователя
     public User updateUser(User user) {
-        if (checkingForExistenceUser(user.getId())) {
-            throw new NotFoundException("Пользователь с ID " + user.getId() + " не найден");
-        }
-        if (checkUserEmail(user.getEmail())) {
-            throw new ValidationException("Пользователь с электронной почтой " +
-                    user.getEmail() + " уже зарегистрирован.");
-        }
+        checkingForExistenceUser(user.getId());
+        checkUserEmail(user.getEmail());
         // имя может быть пустым — в таком случае будет использован логин;
         if (checkUserName(user.getName())) {
             user.setName(user.getLogin());
         }
-        log.debug("Обновлён пользователь: {}", user);
+        log.info("Обновлён пользователь: {}", user);
         return userStorage.updateUser(user);
     }
 
     // удалить всех пользователей
     public void deleteAllUsers() {
+        log.info("Удаление пользователя всех пользователей");
         userStorage.deleteAllUsers();
     }
 
     // удалить пользователя по ИД
     public void deleteUserById(Long userId) {
-        if (checkingForExistenceUser(userId)) {
-            throw new NotFoundException("Пользователь с ID " + userId + " не найден");
-        }
-        log.debug("Удаление пользователя по Ид: {}", userId);
+        checkingForExistenceUser(userId);
+        log.info("Удаление пользователя по ИД: {}", userId);
         userStorage.deleteUserById(userId);
     }
 
     // добавить в друзья
-    public User addToFriends(Long userId, Long friendId) {
-        if (checkingForExistenceUser(userId) || checkingForExistenceUser(friendId)) {
-            throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
-        }
-        log.debug("Пользователь " + userId + " добавляет в друзья пользователя " + friendId);
-        userStorage.getUserById(userId).getFriends().add(friendId);
-        userStorage.getUserById(friendId).getFriends().add(userId);
-        return userStorage.getUserById(userId);
+    public void addToFriends(Long userId, Long friendId) {
+        checkingForExistenceUser(userId);
+        checkingForExistenceUser(friendId);
+        log.info("Пользователь " + userId + " добавляет в друзья пользователя " + friendId);
+        userStorage.addToFriends(userId, friendId);
     }
 
     // удаление из друзей
-    public User removeFromFriends(Long userId, Long friendId) {
-        if (checkingForExistenceUser(userId) || checkingForExistenceUser(friendId)) {
-            throw new NotFoundException("Пользователь и/или его друг не найдены, проверьте ИД");
-        }
-        log.debug("Пользователь " + userId + " удаляет из друзей пользователя " + friendId);
-        userStorage.getUserById(userId).getFriends().remove(friendId);
-        userStorage.getUserById(friendId).getFriends().remove(userId);
-        return userStorage.getUserById(userId);
+    public void removeFromFriends(Long userId, Long friendId) {
+        checkingForExistenceUser(userId);
+        checkingForExistenceUser(friendId);
+        log.info("Пользователь " + userId + " удаляет из друзей пользователя " + friendId);
+        userStorage.removeFromFriends(userId, friendId);
     }
 
-    // получить список друзей пользователя
+    // получить список друзей пользователя, по ИД
     public List<User> getFriendsList(Long userId) {
-        // создаём список куда будем добавлять друзей
-        List<User> friendsList = new ArrayList<>();
-        // наполняем список друзьями из списка ИД друзей пользователя
-        for (Long id : userStorage.getUserById(userId).getFriends()) {
-            friendsList.add(userStorage.getUserById(id));
-        }
-        log.debug("Получить список друзей пользователя с ИД: {}", userId);
-        return friendsList;
+        checkingForExistenceUser(userId);
+        log.info("Получить список друзей пользователя с ИД: {}", userId);
+        return userStorage.getUserFriends(userId);
     }
 
     // получить список общих друзей
     public List<User> getCommonFriends(Long userId, Long otherId) {
-        // создаём список куда будем добавлять общих друзей
-        List<User> commonFriends = new ArrayList<>();
-        // объединяем списки друзей двух пользователей в один список
-        List<Long> mergedFriendsList = new ArrayList<>();
-        mergedFriendsList.addAll(userStorage.getUserById(userId).getFriends());
-        mergedFriendsList.addAll(userStorage.getUserById(otherId).getFriends());
-        // оставляем только общих друзей
-        mergedFriendsList = mergedFriendsList.stream()
-                //группируем в map (пользователь -> количество вхождений)
-                .collect(Collectors.groupingBy(Function.identity()))
-                //проходим по группам
-                .entrySet()
-                .stream()
-                //отбираем пользователей, встречающихся более одного раза
-                .filter(e -> e.getValue().size() > 1)
-                //вытаскиваем ключи
-                .map(Map.Entry::getKey)
-                //собираем в список
-                .collect(Collectors.toList());
-        // наполняем список друзьями (User) по ИД общих друзей
-        for (Long id : mergedFriendsList) {
-            commonFriends.add(userStorage.getUserById(id));
-        }
-        log.debug("Получить список общих друзей пользователя с ИД " + userId + " и с ИД " + otherId);
-        return commonFriends;
+        checkingForExistenceUser(userId);
+        checkingForExistenceUser(otherId);
+        log.info("Получить список общих друзей пользователя с ИД " + userId + " и с ИД " + otherId);
+        return userStorage.getCommonFriends(userId, otherId);
     }
 
     // проверка на существование пользователя, по ИД
-    private boolean checkingForExistenceUser(Long userId) {
-        return userStorage.getUserById(userId) == null;
+    private void checkingForExistenceUser(Long userId) {
+        if (userId < 0 || userStorage.getUserById(userId) == null) {
+            throw new NotFoundException("Пользователь с ИД " + userId + " не найден");
+        }
+    }
+
+    // проверка на дублирование пользователей, по почте
+    private void checkUserEmail(String email) {
+        for (User user : userStorage.getAllUsers()) {
+            if (user.getEmail().equals(email)) {
+                throw new ValidationException("Пользователь с электронной почтой " + email + " уже зарегистрирован.");
+            }
+        }
     }
 
     // проверка на заполнение имени пользователя
     private boolean checkUserName(String name) {
         return name == null || name.isBlank();
-    }
-
-    // проверка на дублирование пользователей (по почте)
-    private boolean checkUserEmail(String email) {
-        for (User user : userStorage.getAllUsers()) {
-            if (user.getEmail().equals(email)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

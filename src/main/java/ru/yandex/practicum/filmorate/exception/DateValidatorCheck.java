@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public class DateValidatorCheck implements ConstraintValidator<DateValidator, LocalDate> {
 
     private static final LocalDate RELEASE_DATE_NOT_EARLIER // дата релиза фильмов - не раньше 28 декабря 1895 года
-            = LocalDate.of(1895, 12, 25);
+            = LocalDate.of(1895, 12, 28);
 
     @Override
     public void initialize(DateValidator dateTimeValidator ) {

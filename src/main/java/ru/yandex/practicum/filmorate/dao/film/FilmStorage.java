@@ -1,8 +1,9 @@
-package ru.yandex.practicum.filmorate.storage.film;
+package ru.yandex.practicum.filmorate.dao.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
+import java.util.List;
+
 /**
  * Интерфейс для хранения фильмов
  * и CRUD методов
@@ -12,7 +13,7 @@ public interface FilmStorage {
     Film createFilm(Film film);
 
     // получить все фильмы
-    Collection<Film> getAllFilms();
+    List<Film> getAllFilms();
 
     // получить фильм по ИД
     Film getFilmById(Long filmId);
@@ -25,4 +26,8 @@ public interface FilmStorage {
 
     // удалить фильм по ИД
     void deleteFilmById(Long filmId);
+
+    void addLikeToFilm(Long filmId, Long userId);
+
+    List<Film> getMostPopularFilms(Integer count);
 }
