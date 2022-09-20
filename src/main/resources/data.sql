@@ -1,3 +1,4 @@
+/*
 INSERT INTO mpa (mpa_name)
 VALUES ('G');
 INSERT INTO mpa (mpa_name)
@@ -21,3 +22,4 @@ INSERT INTO genres (genre_name)
 VALUES ('Документальный');
 INSERT INTO genres (genre_name)
 VALUES ('Боевик');
+*/
