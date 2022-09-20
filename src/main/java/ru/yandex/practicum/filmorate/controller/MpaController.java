@@ -1,24 +1,20 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;
 
-@Slf4j
+/**
+ * Контроллер MPA (возрастных ограничений)
+ */
 @RestController
-@RestControllerAdvice
+@RequiredArgsConstructor
 @RequestMapping("/mpa")
 public class MpaController {
     private final MpaService mpaService;
-
-    @Autowired
-    public MpaController(MpaService mpaService) {
-        this.mpaService = mpaService;
-    }
 
     @GetMapping
     public List<Mpa> getAllMpa() {

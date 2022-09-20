@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.dao.genre;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Repository
-public class GenreDbStorage {
+public class GenreDbStorage implements GenreStorage {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -19,6 +19,7 @@ public class GenreDbStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
     public List<Genre> getAllGenre() {
         String sql = "SELECT genre_id, genre_name FROM genres ORDER BY genre_id";
 
@@ -27,6 +28,7 @@ public class GenreDbStorage {
         return genres;
     }
 
+    @Override
     public Genre getGenreById(Long genreId) {
         final String sqlQueryFilm = "SELECT genre_id, genre_name FROM genres WHERE genre_id = ?";
 

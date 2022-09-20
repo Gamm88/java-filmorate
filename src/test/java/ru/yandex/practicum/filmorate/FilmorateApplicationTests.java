@@ -10,8 +10,8 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.dao.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dao.GenreDbStorage;
-import ru.yandex.practicum.filmorate.dao.MpaDbStorage;
+import ru.yandex.practicum.filmorate.dao.genre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.dao.mpa.MpaDbStorage;
 import ru.yandex.practicum.filmorate.dao.user.UserDbStorage;
 
 import javax.transaction.Transactional;
