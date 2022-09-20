@@ -22,4 +22,4 @@ INSERT INTO genres (genre_name)
 VALUES ('Документальный');
 INSERT INTO genres (genre_name)
 VALUES ('Боевик');
-*/
+ */
