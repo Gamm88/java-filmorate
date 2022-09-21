@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.Friendship;
+package ru.yandex.practicum.filmorate.dao.friendship;
 
 /**
  * Интерфейс для добавления и удаления в друзья пользователей

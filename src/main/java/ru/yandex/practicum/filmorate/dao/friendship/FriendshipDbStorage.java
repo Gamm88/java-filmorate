@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao.Friendship;
+package ru.yandex.practicum.filmorate.dao.friendship;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
