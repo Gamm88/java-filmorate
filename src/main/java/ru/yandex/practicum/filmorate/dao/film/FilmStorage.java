@@ -27,7 +27,6 @@ public interface FilmStorage {
     // удалить фильм по ИД
     void deleteFilmById(Long filmId);
 
-    void addLikeToFilm(Long filmId, Long userId);
-
+    // получить самые популярные фильмы (по количеству лайков)
     List<Film> getMostPopularFilms(Integer count);
 }

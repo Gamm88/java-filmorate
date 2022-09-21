@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.like.LikeStorage;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -21,6 +22,7 @@ import java.util.List;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
+    private final LikeStorage likeStorage;
 
     // создать фильм
     public Film createFilm(Film film) {
@@ -65,16 +67,15 @@ public class FilmService {
         checkingForExistenceFilm(filmId);
         checkingForExistenceUser(userId);
         log.info("Пользователь с ИД=" + userId + " ставит лайк у фильму с ИД=" + filmId);
-        filmStorage.addLikeToFilm(filmId, userId);
+        likeStorage.addLikeToFilm(filmId, userId);
     }
 
     // удалить лайк у фильма
-    public Film deleteLikeFromFilm(Long filmId, Long userId) {
+    public void deleteLikeFromFilm(Long filmId, Long userId) {
         checkingForExistenceFilm(filmId);
         checkingForExistenceUser(userId);
         log.info("Пользователь с ИД=" + userId + " удаляет лайк у фильма с ИД=" + filmId);
-        filmStorage.getFilmById(filmId).getLikes().remove(userId);
-        return filmStorage.getFilmById(filmId);
+        likeStorage.deleteLikeFromFilm(filmId, userId);
     }
 
     // получить топ фильмов по количеству лайков (количество фильмов ограничено числом count)

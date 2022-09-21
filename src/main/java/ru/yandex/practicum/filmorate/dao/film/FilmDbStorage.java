@@ -123,11 +123,6 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public void addLikeToFilm(Long filmId, Long userId) {
-        final String sqlQuery = "INSERT INTO likes (film_id, user_id) VALUES ( ?, ? )";
-        jdbcTemplate.update(sqlQuery, filmId, userId);
-    }
-
     public List<Film> getMostPopularFilms(Integer count) {
         final String sqlQuery = "" +
                 "SELECT * FROM films AS F " +

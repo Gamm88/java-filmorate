@@ -27,11 +27,9 @@ public interface UserStorage {
     // удалить пользователя по ИД
     void deleteUserById(Long userId);
 
-    void addToFriends(Long userId, Long friendId);
-
-    void removeFromFriends(Long userId, Long friendId);
-
+    // получить список друзей пользователя по ИД
     List<User> getUserFriends(Long userId);
 
+    // получить список общих друзей двух пользователей по ИД
     List<User> getCommonFriends(Long userId, Long otherId);
 }

@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.Friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.dao.user.UserStorage;
 
@@ -20,6 +21,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 @RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
+    private final FriendshipStorage friendshipStorage;
 
     // создать пользователя
     public User createUser(User user) {
@@ -75,7 +77,7 @@ public class UserService {
         checkingForExistenceUser(userId);
         checkingForExistenceUser(friendId);
         log.info("Пользователь " + userId + " добавляет в друзья пользователя " + friendId);
-        userStorage.addToFriends(userId, friendId);
+        friendshipStorage.addToFriends(userId, friendId);
     }
 
     // удаление из друзей
@@ -83,7 +85,7 @@ public class UserService {
         checkingForExistenceUser(userId);
         checkingForExistenceUser(friendId);
         log.info("Пользователь " + userId + " удаляет из друзей пользователя " + friendId);
-        userStorage.removeFromFriends(userId, friendId);
+        friendshipStorage.removeFromFriends(userId, friendId);
     }
 
     // получить список друзей пользователя, по ИД

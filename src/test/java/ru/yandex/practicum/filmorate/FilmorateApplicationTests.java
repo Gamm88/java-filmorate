@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
+import ru.yandex.practicum.filmorate.dao.Friendship.FriendshipStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
@@ -30,6 +31,7 @@ class FilmorateApplicationTests {
     private final FilmDbStorage filmStorage;
     private final GenreDbStorage genreStorage;
     private final MpaDbStorage mpaStorage;
+    private final FriendshipStorage friendshipStorage;
 
     @Test
     @Transactional
@@ -134,11 +136,11 @@ class FilmorateApplicationTests {
                         .birthday(now().minusYears(30))
                         .build());
 
-        userStorage.addToFriends(user.getId(), friend.getId());
+        friendshipStorage.addToFriends(user.getId(), friend.getId());
         var userFriends = userStorage.getUserFriends(user.getId());
         assertEquals(friend.getId(), userFriends.get(0).getId());
 
-        userStorage.removeFromFriends(user.getId(), friend.getId());
+        friendshipStorage.removeFromFriends(user.getId(), friend.getId());
         userFriends = userStorage.getUserFriends(user.getId());
         assertTrue(userFriends.isEmpty());
     }

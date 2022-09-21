@@ -1,23 +1,23 @@
-INSERT INTO mpa (mpa_name)
-VALUES ('G');
-INSERT INTO mpa (mpa_name)
-VALUES ('PG');
-INSERT INTO mpa (mpa_name)
-VALUES ('PG-13');
-INSERT INTO mpa (mpa_name)
-VALUES ('R');
-INSERT INTO mpa (mpa_name)
-VALUES ('NC-17');
+MERGE INTO mpa (mpa_id, mpa_name)
+VALUES (1, 'G');
+MERGE INTO mpa (mpa_id, mpa_name)
+VALUES (2, 'PG');
+MERGE INTO mpa (mpa_id, mpa_name)
+VALUES (3, 'PG-13');
+MERGE INTO mpa (mpa_id, mpa_name)
+VALUES (4, 'R');
+MERGE INTO mpa (mpa_id, mpa_name)
+VALUES (5, 'NC-17');
 
-INSERT INTO genres (genre_name)
-VALUES ('Комедия');
-INSERT INTO genres (genre_name)
-VALUES ('Драма');
-INSERT INTO genres (genre_name)
-VALUES ('Мультфильм');
-INSERT INTO genres (genre_name)
-VALUES ('Триллер');
-INSERT INTO genres (genre_name)
-VALUES ('Документальный');
-INSERT INTO genres (genre_name)
-VALUES ('Боевик');
+MERGE INTO genres (genre_id, genre_name)
+VALUES (1, 'Комедия');
+MERGE INTO genres (genre_id, genre_name)
+VALUES (2, 'Драма');
+MERGE INTO genres (genre_id, genre_name)
+VALUES (3, 'Мультфильм');
+MERGE INTO genres (genre_id, genre_name)
+VALUES (4, 'Триллер');
+MERGE INTO genres (genre_id, genre_name)
+VALUES (5, 'Документальный');
+MERGE INTO genres (genre_id, genre_name)
+VALUES (6, 'Боевик');
