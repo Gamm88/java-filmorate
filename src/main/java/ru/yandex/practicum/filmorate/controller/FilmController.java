@@ -1,27 +1,22 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Контроллер фильмов
- * содержит эндпоинты
  */
 @RestController
-@RestControllerAdvice
+@RequiredArgsConstructor
 @RequestMapping("/films")
 public class FilmController {
     private final FilmService filmService;
-
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
 
     // создать фильм
     @PostMapping
@@ -55,25 +50,25 @@ public class FilmController {
 
     // удалить фильм по ИД
     @DeleteMapping("/{filmId}")
-    public void deleteFilmById(@PathVariable("filmId") long filmId) {
+    public void deleteFilmById(@PathVariable("filmId") Long filmId) {
         filmService.deleteFilmById(filmId);
     }
 
     // поставить лайк фильму
     @PutMapping("/{filmId}/like/{userId}")
-    public Film addLikeToFilm(@PathVariable long filmId, @PathVariable long userId) {
-        return filmService.addLikeToFilm(filmId, userId);
+    public void addLikeToFilm(@PathVariable Long filmId, @PathVariable Long userId) {
+        filmService.addLikeToFilm(filmId, userId);
     }
 
     // удалить лайк у фильма
     @DeleteMapping("/{filmId}/like/{userId}")
-    public Film deleteLikeForFilm(@PathVariable long filmId, @PathVariable long userId) {
-        return filmService.deleteLikeFromFilm(filmId, userId);
+    public void deleteLikeForFilm(@PathVariable Long filmId, @PathVariable Long userId) {
+        filmService.deleteLikeFromFilm(filmId, userId);
     }
 
     // получить самые популярные фильмы по количеству лайков, если значение параметра count не задано, вернуть топ 10
     @GetMapping("/popular")
-    public Collection<Film> mostPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count) {
+    public List<Film> getMostPopularFilms(@RequestParam(defaultValue = "10", required = false) Integer count) {
         return filmService.getMostPopularFilms(count);
     }
 }
